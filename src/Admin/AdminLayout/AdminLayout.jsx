@@ -26,7 +26,7 @@ const AdminLayout = () => {
     };
     const [modalData, setModalData] = useState(null);
     return (
-        <div className="flex min-h-screen bg-gray-100 ">
+        <div className="flex max-h-screen bg-gray-100 ">
             <Sidebar handleLogout={handleLogout} />
             <div className="flex-1 flex flex-col ">
                 <Navbar handleLogout={handleLogout} />

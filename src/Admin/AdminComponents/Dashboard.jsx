@@ -40,7 +40,7 @@ const AdminDashboard = () => {
                 <DashboardCard
                     Icon={<IoNewspaperOutline />}
                     heading={"Total Blog"}
-                    iconColor={"black"}
+                    iconColor={"blue"}
                     count={"29"}
                     growth={false}
                     growthData={"12%"}

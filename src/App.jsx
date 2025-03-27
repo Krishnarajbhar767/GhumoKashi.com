@@ -7,7 +7,6 @@ import Footer from "./Components/Common/Footer";
 import ComingSoon from "./Pages/ComingSoon";
 import { FloatingWhatsApp } from "react-floating-whatsapp";
 import { FaPhoneAlt } from "react-icons/fa";
-
 import { useNavigate, Routes, Route, Navigate } from "react-router-dom";
 import BlogPage from "./Pages/Blog_Page/BlogPage";
 import Services_Page from "./Pages/Services_Page";
@@ -19,7 +18,7 @@ import PackageView from "./Pages/Package/PK_Components/PackageView";
 import PageNotFound from "./Components/Common/PageNotFound";
 import AdminLayout from "./Admin/AdminLayout/AdminLayout";
 import AdminDashboard from "./Admin/AdminComponents/Dashboard";
-import AdminServices from "./Admin/AdminComponents/Services";
+
 import AdminPackages from "./Admin/AdminComponents/Packages";
 import AdminBlog from "./Admin/AdminComponents/Blog";
 import AdminProfile from "./Admin/AdminComponents/Profile";
@@ -29,6 +28,7 @@ import ProtectedRoute from "./Components/Common/ProtectedRoute";
 import AdminLoginForm from "./Admin/LoginForm/LoginForm";
 import AdminWelcome from "./Admin/AdminComponents/Welcome";
 import Cookies from "js-cookie";
+import AdminServices from "./Admin/AdminComponents/Services/Services";
 function App() {
     const { isAdmin } = useSelector((state) => state.auth);
     const token = Cookies.get("token");

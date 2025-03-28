@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import "./App.css";
 import Home from "./Pages/Home";
@@ -23,15 +23,44 @@ import AdminPackages from "./Admin/AdminComponents/Packages";
 import AdminBlog from "./Admin/AdminComponents/Blog";
 import AdminProfile from "./Admin/AdminComponents/Profile";
 import AdminContact from "./Admin/AdminComponents/Contact";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ProtectedRoute from "./Components/Common/ProtectedRoute";
 import AdminLoginForm from "./Admin/LoginForm/LoginForm";
 import AdminWelcome from "./Admin/AdminComponents/Welcome";
 import Cookies from "js-cookie";
 import AdminServices from "./Admin/AdminComponents/Services/Services";
+import { toast } from "react-toastify";
+import { servicesEndpoints } from "./Services/endpoints/services/servicesEndpoints";
+import { servicesApi } from "./Services/api/services/servicesApi";
+import { setServices, setIsServicesLoaded } from "./Redux/slices/servicesSlice";
+import { handleApiError } from "./Services/handleApiError";
 function App() {
     const { isAdmin } = useSelector((state) => state.auth);
+    const isServicesLoaded = useSelector((state) => state?.services?.isLoaded);
     const token = Cookies.get("token");
+    const dispatch = useDispatch();
+
+    // ON First Render Fetch Services For Shere Data Of Serviced To Amdin And Public
+    const fetchServices = async () => {
+        try {
+            const res = await servicesApi.getAllServices();
+            dispatch(setServices(res));
+            dispatch(setIsServicesLoaded(true));
+            return res.data;
+        } catch (error) {
+            const err = handleApiError(
+                error,
+                "error While Fetching The Services"
+            );
+            toast.error(`Error While Fetching Services Due To ${err}`);
+        }
+    };
+
+    useEffect(() => {
+        if (!isServicesLoaded) {
+            fetchServices();
+        }
+    }, [isServicesLoaded]);
     return (
         <div className="w-full h-screen bg-transparent ">
             {!isAdmin && !token && <Navbar />}

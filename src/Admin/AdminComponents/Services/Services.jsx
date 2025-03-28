@@ -10,43 +10,33 @@ import {
     EditServiceModal,
     ViewServiceModal,
 } from "./ServiceAddEditPreviewModal";
+import { servicesApi } from "../../../Services/api/services/servicesApi";
+import { toast } from "react-toastify";
+import { setIsServicesLoaded } from "../../../Redux/slices/servicesSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { handleApiError } from "../../../Services/handleApiError";
+import { uploadFile } from "../../../Services/apiConnector";
 
 const AdminServices = () => {
-    const servicesData = useMemo(() => [
-        {
-            id: 1,
-            title: "Luxury Beach Resort",
-            content: "Enjoy a relaxing stay at a beautiful beach resort.",
-            imageUrl: "https://picsum.photos/200",
-        },
-        {
-            id: 2,
-            title: "Luxury Beach Resort",
-            content: "Enjoy a relaxing stay at a beautiful beach resort.",
-            imageUrl: "https://picsum.photos/200",
-        },
-        {
-            id: 3,
-            title: "Luxury Beach Resort",
-            content: "Enjoy a relaxing stay at a beautiful beach resort.",
-            imageUrl: "https://picsum.photos/200",
-        },
-    ]);
+    const dispatch = useDispatch();
+    const servicesData = useSelector((state) => state.services.services);
 
     const [modalData, setModalData] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
-
     const [isViewing, setIsViewing] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
     // Preview Services Handler
     const handlePreview = (service) => {
         setIsViewing(service);
-        console.log("IS VIEWING ___", isViewing);
     };
     // Edit Services Handler
-    const handleEdit = (service) => {
-        setIsEditing(service);
+    const handleEdit = (newServiceData) => {
+        if (!isServiceUpdated(newServiceData, isEditing))
+            return toast.error("Opps ! Please update something.");
+        try {
+            // Perform All Your Task
+        } catch (error) {}
     };
     // Delete Services Handler
     const handleDelete = (service) => {
@@ -54,13 +44,69 @@ const AdminServices = () => {
             text1: "Delete Confirmation",
             text2: "Are you sure you want to delete this service? This action cannot be undone.",
             btn1Text: "Yes, Delete",
-            btn1Handler: () => {
-                console.log("Service Data --->", service); // Call the delete function
-                setModalData(null); // Close modal after deletion
+            btn1Handler: async () => {
+                const toastId = toast.loading(
+                    "Deleting Service. Please wait !"
+                );
+                try {
+                    const res = await servicesApi.deleteServiceById(
+                        service._id
+                    );
+                    toast.success("Service deleted successfully.");
+                    dispatch(setIsServicesLoaded(false));
+                    setModalData(null); // Close modal after deletion
+                } catch (error) {
+                    const err = handleApiError(
+                        error,
+                        "error while  deleting the service"
+                    );
+                    toast.error(
+                        `Error While Deleting The Service Due To ${err}`
+                    );
+                } finally {
+                    toast.dismiss(toastId);
+                }
             },
             btn2Text: "Cancel",
             btn2Handler: () => setModalData(null),
         });
+    };
+
+    const handleCreate = async (data) => {
+        const toastId = toast.loading("Creating Service. Please Wait !");
+        try {
+            const ImageUrl = await uploadFile(data.ImageUrl);
+            const res = await servicesApi.createServices({ ...data, ImageUrl });
+            if (res) {
+                toast.success("Services Created successfully.");
+                dispatch(setIsServicesLoaded(false));
+                setIsCreating(false);
+            }
+        } catch (error) {
+            const err = handleApiError(
+                error,
+                "error while creating the services"
+            );
+            toast.error(`Error while creating the services due to ${err}`);
+        } finally {
+            toast.dismiss(toastId);
+        }
+    };
+
+    const isServiceUpdated = (newFormData, oldFormData) => {
+        if (
+            newFormData.ImageUrl !== oldFormData.ImageUrl &&
+            newFormData.ImageUrl.length === 1
+        ) {
+            return true;
+        }
+        if (newFormData.title.trim() !== oldFormData.title.trim()) {
+            return true;
+        }
+        if (newFormData.content.trim() !== oldFormData.content.trim()) {
+            return true;
+        }
+        return false;
     };
 
     const filteredServices = useMemo(() => {
@@ -97,7 +143,7 @@ const AdminServices = () => {
                         key={service.id}
                         service={service}
                         onDelete={handleDelete}
-                        onEdit={handleEdit}
+                        onEdit={(service) => setIsEditing(service)}
                         onPreview={handlePreview}
                     />
                 ))}
@@ -114,16 +160,14 @@ const AdminServices = () => {
                 <EditServiceModal
                     onClose={() => setIsEditing(false)}
                     defaultValues={isEditing}
-                    onSubmit={() => {}}
+                    onSubmit={handleEdit}
                 />
             )}
 
             {isCreating && (
                 <CreateServiceModal
                     onClose={() => setIsCreating(false)}
-                    onSubmit={(data) => {
-                        alert("data --->", data);
-                    }}
+                    onSubmit={handleCreate}
                 />
             )}
         </div>

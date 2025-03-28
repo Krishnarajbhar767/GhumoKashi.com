@@ -1,16 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     services: [],
+    isLoaded: false,
 };
 const servicesSlice = createSlice({
     name: "services",
     initialState,
     reducers: {
-        setIsAdmin: (state, value) => {
-            state.isAdmin = value.payload;
+        setIsServicesLoaded: (state, value) => {
+            state.isLoaded = value.payload;
+        },
+        setServices: (state, value) => {
+            state.services = value.payload;
         },
     },
 });
 
-export const {} = servicesSlice.actions;
+export const { setIsServicesLoaded, setServices } = servicesSlice.actions;
 export default servicesSlice.reducer;

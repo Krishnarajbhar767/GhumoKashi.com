@@ -39,7 +39,7 @@ const ViewServiceModal = ({ onClose, service }) => {
                     {/* Image */}
                     <div className="rounded-lg overflow-hidden shadow-md border border-gray-300">
                         <img
-                            src={service?.imageUrl}
+                            src={service?.ImageUrl}
                             alt={service?.title}
                             className="w-full h-52 object-cover object-center"
                         />
@@ -116,9 +116,9 @@ const EditServiceModal = ({ onClose, onSubmit, defaultValues }) => {
                     />
                     <FileInput
                         label="Upload Image"
-                        name="imageUrl"
+                        name="ImageUrl"
                         register={register}
-                        preUrl={defaultValues?.imageUrl}
+                        preUrl={defaultValues?.ImageUrl}
                     />
 
                     {/* Footer Buttons */}
@@ -161,12 +161,14 @@ const CreateServiceModal = ({ onClose, onSubmit }) => {
 
                 {/* Form */}
                 <form
-                    onSubmit={handleSubmit(onSubmit)}
+                    onSubmit={handleSubmit((data) => {
+                        onSubmit({ ...data, ImageUrl: data.ImageUrl[0] });
+                    })}
                     className="space-y-4 mt-4"
                 >
                     <FileInput
                         label="Upload Image"
-                        name="imageUrl"
+                        name="ImageUrl"
                         register={register}
                         required={true}
                     />

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const PackageView = () => {
     const navigate = useNavigate();
-
+    const location = useLocation();
+    const data = location.state?.data ?? [];
     return (
         <div className="lg:w-[60%] w-full mx-auto flex flex-col gap-5 p-6 rounded-lg">
             <div className="bg-white  p-4 rounded-lg shadow-sm">
@@ -12,8 +13,8 @@ const PackageView = () => {
                     {data.name}
                 </h1>
                 <img
-                    src={data?.image}
-                    alt={data?.name}
+                    src={data?.ImageUrl}
+                    alt={data?.title}
                     className="w-full lg:h-100 object-cover rounded-md mb-6"
                 />
             </div>
@@ -27,7 +28,7 @@ const PackageView = () => {
                     Destinations:
                 </h2>
                 <div className="grid grid-cols-2 gap-2 text-gray-700">
-                    {data?.destinations?.map((item, i) => (
+                    {data?.destination?.map((item, i) => (
                         <span
                             key={i}
                             className="bg-blue-100  px-3 py-1 rounded-md"
@@ -37,8 +38,11 @@ const PackageView = () => {
                     ))}
                 </div>
             </div>
-
-            {data.days?.map((item, i) => (
+            <span className="bg-blue-100  px-3 py-1 rounded-md">
+                {data.days}
+            </span>
+            <span>{data.content}</span>
+            {/* {data?.days.split(" ").map((item, i) => (
                 <div className="flex flex-col gap-2">
                     <span key={i} className="bg-blue-100  px-3 py-1 rounded-md">
                         {i + 1}. {item.day}
@@ -49,7 +53,7 @@ const PackageView = () => {
                         ))}
                     </div>
                 </div>
-            ))}
+            ))} */}
 
             {/* <div className="bg-white p-4 rounded-lg shadow-sm mt-4">
                 <h2 className="text-xl font-semibold text-gray-800 mb-2">Highlights:</h2>

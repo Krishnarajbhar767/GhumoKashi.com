@@ -55,24 +55,12 @@ const Sidebar = ({ handleLogout }) => {
                     label="Blog"
                     isOpen={isOpen}
                 />
-                <SidebarLink
-                    to="/admin/profile"
-                    icon={<FaUser />}
-                    label="Profile"
-                    isOpen={isOpen}
-                />
-                <SidebarLink
-                    to="/admin/contact"
-                    icon={<FaEnvelope />}
-                    label="Contact"
-                    isOpen={isOpen}
-                />
             </ul>
 
             {/* Logout Button */}
             <button
                 onClick={handleLogout}
-                className="mt-10 flex items-center justify-center gap-2 bg-white text-[#E8464B] px-4 py-2 rounded-md font-semibold shadow-md hover:scale-105 transition w-full"
+                className=" mt-64 flex items-center justify-center gap-2 bg-white text-[#E8464B] px-4 py-2 rounded-md font-semibold shadow-md hover:scale-105 transition w-full "
             >
                 <FaSignOutAlt /> {isOpen && "Logout"}
             </button>

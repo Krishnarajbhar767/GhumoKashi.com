@@ -7,46 +7,55 @@ import Footer from "./Components/Common/Footer";
 import ComingSoon from "./Pages/ComingSoon";
 import { FloatingWhatsApp } from "react-floating-whatsapp";
 import { FaPhoneAlt } from "react-icons/fa";
-import { useNavigate, Routes, Route, Navigate } from "react-router-dom";
+import {
+    useNavigate,
+    Routes,
+    Route,
+    Navigate,
+    useLocation,
+} from "react-router-dom";
 import BlogPage from "./Pages/Blog_Page/BlogPage";
 import Services_Page from "./Pages/Services_Page";
 import ContactPage from "./Pages/Contact/ContactPage";
 import AboutPage from "./Pages/About_Page/AboutPage";
 import Package_Page from "./Pages/Package/Package_Page";
-import { ImWhatsapp } from "react-icons/im";
+
 import PackageView from "./Pages/Package/PK_Components/PackageView";
 import PageNotFound from "./Components/Common/PageNotFound";
 import AdminLayout from "./Admin/AdminLayout/AdminLayout";
 import AdminDashboard from "./Admin/AdminComponents/Dashboard";
 
-import AdminPackages from "./Admin/AdminComponents/Packages";
-import AdminBlog from "./Admin/AdminComponents/Blog";
+import AdminPackages from "./Admin/AdminComponents/Packages/Packages";
+import AdminBlog from "./Admin/AdminComponents/Blog/Blog";
 import AdminProfile from "./Admin/AdminComponents/Profile";
 import AdminContact from "./Admin/AdminComponents/Contact";
 import { useDispatch, useSelector } from "react-redux";
 import ProtectedRoute from "./Components/Common/ProtectedRoute";
 import AdminLoginForm from "./Admin/LoginForm/LoginForm";
 import AdminWelcome from "./Admin/AdminComponents/Welcome";
-import Cookies from "js-cookie";
+
 import AdminServices from "./Admin/AdminComponents/Services/Services";
 import { toast } from "react-toastify";
-import { servicesEndpoints } from "./Services/endpoints/services/servicesEndpoints";
+
 import { servicesApi } from "./Services/api/services/servicesApi";
 import { setServices, setIsServicesLoaded } from "./Redux/slices/servicesSlice";
 import { handleApiError } from "./Services/handleApiError";
+import { packagesApis } from "./Services/api/packages/packagesApis";
+import { setIsPackagesLoaded, setPackages } from "./Redux/slices/packagesSlice";
+import BlogView from "./Pages/Blog_Page/Blog_Com/BlogView";
 function App() {
-    const { isAdmin } = useSelector((state) => state.auth);
     const isServicesLoaded = useSelector((state) => state?.services?.isLoaded);
-    const token = Cookies.get("token");
-    const dispatch = useDispatch();
+    const isPackagesLoaded = useSelector((state) => state?.packages?.isLoaded);
 
+    const dispatch = useDispatch();
+    const location = useLocation();
+    const isAdminRoute = location.pathname.startsWith("/admin");
     // ON First Render Fetch Services For Shere Data Of Serviced To Amdin And Public
     const fetchServices = async () => {
         try {
             const res = await servicesApi.getAllServices();
             dispatch(setServices(res));
             dispatch(setIsServicesLoaded(true));
-            return res.data;
         } catch (error) {
             const err = handleApiError(
                 error,
@@ -55,15 +64,34 @@ function App() {
             toast.error(`Error While Fetching Services Due To ${err}`);
         }
     };
+    const fetchPackages = async () => {
+        try {
+            const res = await packagesApis.getAllPackages();
+            dispatch(setPackages(res));
+            dispatch(setIsPackagesLoaded(true));
+        } catch (error) {
+            const err = handleApiError(
+                error,
+                "error While Fetching The Packages"
+            );
+            toast.error(`Error While Fetching Packages Due To ${err}`);
+        }
+    };
 
+    useEffect(() => {
+        if (!isPackagesLoaded) {
+            fetchPackages();
+        }
+    }, [isPackagesLoaded]);
     useEffect(() => {
         if (!isServicesLoaded) {
             fetchServices();
         }
     }, [isServicesLoaded]);
+
     return (
         <div className="w-full h-screen bg-transparent ">
-            {!isAdmin && !token && <Navbar />}
+            {!isAdminRoute && <Navbar />}
 
             <Routes>
                 <Route path="/" element={<Home />} />
@@ -77,6 +105,7 @@ function App() {
                 <Route path="/packag/:id" element={<PackageView />} />
 
                 <Route path="/blog" element={<BlogPage />} />
+                <Route path="/blog/:id" element={<BlogView />} />
 
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="*" element={<PageNotFound />} />
@@ -98,8 +127,6 @@ function App() {
                     <Route path="services" element={<AdminServices />} />
                     <Route path="packages" element={<AdminPackages />} />
                     <Route path="blog" element={<AdminBlog />} />
-                    <Route path="profile" element={<AdminProfile />} />
-                    <Route path="contact" element={<AdminContact />} />
                 </Route>
             </Routes>
 
@@ -109,26 +136,28 @@ function App() {
         <FaPhoneAlt className="nav-linker text-[30px]" />
       </a> */}
 
-            <div
-                onClick={() => alert("Open Whatsapp")}
-                className="fixed bottom-10 right-10 z-40 h-[70px] cursor-pointer px-5 flex items-center justify-center  text-black rounded-lg "
-            >
-                {/* <ImWhatsapp /> */}
+            {!isAdminRoute && (
+                <div
+                    onClick={() => alert("Open Whatsapp")}
+                    className="fixed bottom-10 right-10 z-40 h-[70px] cursor-pointer px-5 flex items-center justify-center  text-black rounded-lg "
+                >
+                    {/* <ImWhatsapp /> */}
 
-                <FloatingWhatsApp
-                    phoneNumber="+91 9235171660"
-                    accountName="Ghoomo Kashi"
-                    statusMessage="Online"
-                    avatar="/logo/GH_Logo[1].png"
-                    allowEsc
-                    allowClickAway
-                    notification
-                    notificationSound
-                />
-            </div>
+                    <FloatingWhatsApp
+                        phoneNumber="+91 9235171660"
+                        accountName="Ghoomo Kashi"
+                        statusMessage="Online"
+                        avatar="/logo/GH_Logo[1].png"
+                        allowEsc
+                        allowClickAway
+                        notification
+                        notificationSound
+                    />
+                </div>
+            )}
 
             {/* footer section with responsive */}
-            {!isAdmin && !token && <Footer />}
+            {!isAdminRoute && <Footer />}
         </div>
     );
 }

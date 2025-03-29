@@ -31,12 +31,32 @@ const AdminServices = () => {
         setIsViewing(service);
     };
     // Edit Services Handler
-    const handleEdit = (newServiceData) => {
+    const handleEdit = async (newServiceData) => {
+        if (newServiceData.ImageUrl.length < 1) {
+            return toast.error("Please Update Image Or Cancel The Task.");
+        }
         if (!isServiceUpdated(newServiceData, isEditing))
             return toast.error("Opps ! Please update something.");
+
+        const toastId = toast.loading("Updating  your service. Please wait!");
+
         try {
-            // Perform All Your Task
-        } catch (error) {}
+            const res = await servicesApi.editServiceById(
+                isEditing._id,
+                newServiceData
+            );
+            toast.success("Service updated successfully.");
+            dispatch(setIsServicesLoaded(false));
+            setIsEditing(false);
+        } catch (error) {
+            const err = handleApiError(
+                error,
+                "Error While Updating The Service.."
+            );
+            toast.error(`Error While Updating The Services Due To ${err}`);
+        } finally {
+            toast.dismiss(toastId);
+        }
     };
     // Delete Services Handler
     const handleDelete = (service) => {
@@ -94,6 +114,8 @@ const AdminServices = () => {
     };
 
     const isServiceUpdated = (newFormData, oldFormData) => {
+        if (!newFormData.ImageUrl)
+            return toast.error("Please Updated Images Or Cancel.");
         if (
             newFormData.ImageUrl !== oldFormData.ImageUrl &&
             newFormData.ImageUrl.length === 1

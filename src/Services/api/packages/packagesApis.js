@@ -1,26 +1,25 @@
 import axiosInstance, { uploadFile } from "../../apiConnector";
-import { servicesEndpoints } from "../../endpoints/services/servicesEndpoints";
-import { handleApiError } from "../../handleApiError";
+import { packagesEndpoints } from "../../endpoints/packages/packagesEndpoints";
 
-export const servicesApi = {
-    getAllServices: async () => {
-        const res = await axiosInstance.get(servicesEndpoints.getAllServices);
-        return res?.data.data;
+export const packagesApis = {
+    getAllPackages: async () => {
+        const res = await axiosInstance.get(packagesEndpoints.getAllPackages);
+        return res?.data?.data;
     },
-    createServices: async (data) => {
+    deletePackageById: async (id) => {
+        const res = await axiosInstance.delete(
+            packagesEndpoints.deletePackageById(id)
+        );
+        return res.data;
+    },
+    createPackage: async (data) => {
         const res = await axiosInstance.post(
-            servicesEndpoints.createServices,
+            packagesEndpoints.createPackage,
             data
         );
         return res?.data?.data;
     },
-    deleteServiceById: async (id) => {
-        const res = await axiosInstance.delete(
-            servicesEndpoints.deleteServiceById(id)
-        );
-        return res.data;
-    },
-    editServiceById: async (id, newData) => {
+    editPackageById: async (id, newData) => {
         if (
             newData.ImageUrl instanceof FileList && // Ensure it's a FileList
             newData.ImageUrl.length > 0 && // Ensure it contains at least one file
@@ -34,7 +33,7 @@ export const servicesApi = {
         }
 
         const res = await axiosInstance.put(
-            servicesEndpoints.editServiceById(id),
+            packagesEndpoints.editPackageById(id),
             newData
         );
         return res.data;

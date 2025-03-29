@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { setIsAdmin } from "../../Redux/slices/authSlice";
 import { useState } from "react";
 import ConfirmationModal from "../../Components/Common/ConfirmationModal";
+import { toast } from "react-toastify";
 const AdminLayout = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -18,6 +19,7 @@ const AdminLayout = () => {
             btn1Handler: () => {
                 dispatch(setIsAdmin(false));
                 Cookies.remove("token");
+                toast.success("Logout successfully.");
                 navigate("/");
             },
             btn2Text: "Cancel",
